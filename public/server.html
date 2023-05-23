@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Socket.IO whiteboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="main">
+
+    </div>
+
+  <div class="colors">
+    <div class="color black"></div>
+    <div class="color red"></div>
+    <div class="color green"></div>
+    <div class="color blue"></div>
+    <div class="color yellow"></div>
+  </div>
+
+  <div class="user-controls">
+    <div class="canvases">
+    </div>
+    <div class="user-colors">
+        <div class="user-color black"></div>
+        <div class="user-color red"></div>
+        <div class="user-color green"></div>
+        <div class="user-color blue"></div>
+        <div class="user-color yellow"></div>
+    </div>
+    
+    <div class="controls">
+        <label for="stroke">Stroke width</label>
+        <input type="number">
+        <button>Enter</button>
+    </div>
+    
+        <button id="new-frame">New frame</button>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/server.js"></script>
+</body>
+</html>
