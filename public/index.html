@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>mycohackers whiteboard</title>
-    <link rel="stylesheet" href="dependencies/colorpicker.min.css" />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body style="overflow: hidden">
-    <svg></svg>
-    <canvas class="whiteboard client"></canvas>
 
-    <div class="colors">
-      <form method="get" target="_blank">
-        <input type="text" id="colorpicker" />
-      </form>
-      <input class="slider" type="range" min="2" max="20" id="stroke-width" />
-      <script src="dependencies/colorpicker.js"></script>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <title>mycohackers whiteboard</title>
+  <!-- <link rel="stylesheet" href="dependencies/colorpicker.min.css" /> -->
+  <link rel="stylesheet" href="style.css" />
+</head>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/main.js"></script>
-    <script src="/main_trails.js"></script>
-  </body>
+<body style="overflow: hidden">
+  <svg></svg>
+  <canvas class="whiteboard client"></canvas>
+
+  <div class="colors">
+    <form method="get" target="_blank">
+      <!-- <input type="text" id="colorpicker" class="no-cursor" /> -->
+      <input type="color" id="colorpicker">
+
+    </form>
+    <input class="slider" type="range" min="2" max="40" id="stroke-width" />
+    <script src="dependencies/colorpicker.js"></script>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/main.js"></script>
+  <script src="/main_trails.js"></script>
+</body>
+
 </html>
