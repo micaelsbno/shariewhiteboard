@@ -1,0 +1,8 @@
+.server-controls {
+    position: absolute;
+    z-index: 2;
+}
+
+.user-controls {
+    z-index: 2;
+}

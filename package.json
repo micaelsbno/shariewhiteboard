@@ -9,11 +9,16 @@
   ],
   "dependencies": {
     "express": "~4.17.1",
-    "socket.io": "^4.0.0"
+    "socket.io": "^4.6.1"
   },
   "scripts": {
     "start": "node index"
   },
   "author": "Damien Arrachequesne",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.8"
+  }
 }
