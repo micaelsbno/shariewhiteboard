@@ -85,3 +85,7 @@ body {
 .hidden {
   opacity: 0;
 }
+
+.color-picker__dialog {
+  transform: scale(2)
+}
