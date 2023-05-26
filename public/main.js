@@ -98,9 +98,13 @@
     current.lineWidth = newWidth;
     context.lineWidth = newWidth;
   });
+  slider.addEventListener('touchmove', function (e) {
+    e.preventDefault();
+  })
 
   // color picker
-  const picker = new CP(document.querySelector('#colorpicker'));
+  const colorPickerElement = document.querySelector('#colorpicker')
+  const picker = new CP(colorPickerElement);
   picker.on('change', function (r, g, b, a) {
     const newColor = this.color(r, g, b, a);
     this.source.value = newColor;
@@ -108,6 +112,11 @@
     current.color = newColor;
     slider.style.setProperty('--pseudo-color', newColor);
   });
+
+  colorPickerElement.addEventListener('touchmove', function (e) {
+    e.preventDefault();
+  })
+
 
   // limit the number of events per second
   function throttle(callback, delay) {
