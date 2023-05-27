@@ -97,6 +97,7 @@
     var dataURL = canvas.toDataURL();
     savedDrawings.push(dataURL);
   }
+
   socket.on("loadCanvas", (number) => {
     loadCanvas(number);
   });
@@ -159,6 +160,24 @@
       },
       active: false,
     },
+    skew: {
+      string: "skewAnimation 2s linear infinite",
+      keyframes: {
+        "0%": "skew(0deg, 0deg)",
+        "50%": "skew(150deg, 130deg)",
+        "100%": "skew(355deg, 320deg)",
+      },
+      active: false,
+    },
+    matrix: {
+      string: "matrixAnimation 2s linear infinite",
+      keyframes: {
+        "0%": "matrix(2, 2, 3, 4, 5, 6)",
+        "50%": "matrix(1, 0, 0, 1, 0, 0)",
+        "100%": "matrix(1, 0, 0, 1, 100, 100)",
+      },
+      active: false,
+    },
   };
 
   function getCurrentAnimationKeyframes() {
@@ -182,22 +201,6 @@
     return strings;
   }
 
-  function currentAnimations() {
-    let fullString = "";
-    Object.keys(animations).forEach((animation, i) => {
-      if (animations[animation].active) {
-        console.log("gettign e");
-        if (i !== 0) {
-          fullString = fullString
-            .concat(", ")
-            .concat(animations[animation].string);
-        } else {
-          fullString = fullString.concat(animations[animation].string);
-        }
-      }
-    });
-    return fullString;
-  }
   function toggleAnimation(anima) {
     animations[anima].active = !animations[anima].active;
 
@@ -249,6 +252,8 @@
   socket.on("toggleZoom", () => {
     toggleAnimation("zoom");
   });
+  socket.on("toggleSkew", () => toggleAnimation("skew"));
+  socket.on("toggleMatrix", () => toggleAnimation("matrix"));
 
   socket.on("changeAnimationSpeed", (speed) => {
     console.log("changing animation speed", speed);

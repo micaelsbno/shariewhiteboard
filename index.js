@@ -95,6 +95,8 @@ function onConnection(socket) {
   socket.on("toggleRotate", () => socket.broadcast.emit("toggleRotate"));
   socket.on("toggleZoom", () => socket.broadcast.emit("toggleZoom"));
   socket.on("toggleDrawing", () => socket.broadcast.emit("toggleDrawing"));
+  socket.on("toggleMatrix", () => socket.broadcast.emit("toggleMatrix"));
+  socket.on("toggleSkew", () => socket.broadcast.emit("toggleSkew"));
   socket.on("changeAnimationSpeed", (speed) =>
     socket.broadcast.emit("changeAnimationSpeed", speed)
   );
