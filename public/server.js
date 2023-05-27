@@ -102,24 +102,6 @@
     socket.emit("changeAdminColor", current.color);
   }
 
-  // color picker
-  // const picker = new CP($('#colorpicker'));
-  // picker.on('change', function (r, g, b, a) {
-  //   const newColor = this.color(r, g, b, a);
-  //   this.source.value = newColor;
-  //   $('#colorpicker').style = `background: ${newColor}`;
-  //   current.color = newColor;
-  // });
-
-  // var userColors = document.getElementsByClassName('user-color');
-  // for (let color of userColors) {
-  //   color.addEventListener('click', onUserColorUpdate);
-  // }
-  // function onUserColorUpdate(e) {
-  //   user.color = e.target.className.split(' ')[1];
-  //   socket.emit('changeUserColor', user.color);
-  // }
-
   // line width setter
   var strokeServer = document.getElementById("stroke-server-button");
   strokeServer.addEventListener("click", onStrokeServerUpdate);
@@ -213,12 +195,24 @@
   //   socket.emit('playRecording');
   // });
 
+  // animations
   var stop = $("#toggle-trails");
   stop.addEventListener("click", () => socket.emit("toggleTrails"));
-  var animation = $("#toggle-animation");
-  animation.addEventListener("click", () => socket.emit("toggleAnimation"));
+  var rotate = $("#toggle-rotate");
+  rotate.addEventListener("click", () => socket.emit("toggleRotate"));
   var zoom = $("#toggle-zoom");
   zoom.addEventListener("click", () => socket.emit("toggleZoom"));
+  const animationSpeed = $("#animation-speed");
+  animationSpeed.addEventListener("change", () =>
+    socket.emit("changeAnimationSpeed", animationSpeed.value)
+  );
+  const eraser = $("#eraser");
+  eraser.addEventListener("click", () => {
+    const eraserSpeed = $("#eraser-speed").value;
+    console.log(eraserSpeed);
+    socket.emit("toggleEraser", eraserSpeed);
+  });
+
   var toggleDrawing = $("#toggle-drawing");
   toggleDrawing.addEventListener("click", () => socket.emit("toggleDrawing"));
 })();

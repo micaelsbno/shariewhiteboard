@@ -1,8 +1,11 @@
 .server-controls {
-    position: absolute;
-    z-index: 2;
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .user-controls {
-    z-index: 2;
+  z-index: 2;
 }

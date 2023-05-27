@@ -148,5 +148,21 @@
   }
   socket.on("state", (data) => {
     drawing = data.drawing;
+    if (data.eraser.active) {
+      toggleEraser();
+    }
+  });
+
+  let eraserInterval = null;
+  function toggleEraser() {
+    if (!eraserInterval) {
+      eraserInterval = setInterval(clearCanvas, 1000);
+    } else {
+      clearInterval(eraserInterval);
+      eraserInterval = null;
+    }
+  }
+  socket.on("toggleEraser", (speed) => {
+    toggleEraser();
   });
 })();

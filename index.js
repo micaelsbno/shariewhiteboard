@@ -7,30 +7,15 @@ const port = process.env.PORT || 3000;
 const state = {
   drawing: true,
   trails: true,
+  eraser: {
+    speed: 1,
+    active: false,
+  },
 };
 
 // trails
 const clients = {};
 const getAllClientIds = () => Object.keys(clients);
-
-let newClients = {
-  drawing: {
-    visualiser: {
-      latest: () => {
-        console.log(this);
-        return Object.keys(this.drawing.visualiser).pop();
-      },
-    },
-  },
-  trails: {
-    visualiser: {
-      latest: {},
-    },
-  },
-  main: {
-    server: {},
-  },
-};
 
 app.use(express.static(__dirname + "/public"));
 
@@ -42,8 +27,6 @@ function onConnection(socket) {
   const { query } = socket.handshake;
   const { clientType, script } = query;
 
-  newClients[script][clientType][id] = socket;
-
   if (id !== "visualiser.html" || id !== "server.html") {
     clients[socket.id] = socket;
   }
@@ -51,14 +34,9 @@ function onConnection(socket) {
   console.log(`Client connected, total clients: ${getAllClientIds().length}`);
 
   socket.on("draw", (data) => {
-    const drawable = newClients.drawing.visualiser.latest();
-    if (drawable) {
-      drawable.emit("draw", data);
-    }
-
-    // getAllClientIds().forEach((clientId) => {
-    //   clients[clientId].emit("draw", data);
-    // });
+    getAllClientIds().forEach((clientId) => {
+      clients[clientId].emit("draw", data);
+    });
   });
 
   getAllClientIds().forEach((clientId) => {
@@ -114,8 +92,17 @@ function onConnection(socket) {
   socket.on("clear", () => socket.broadcast.emit("clear"));
 
   // whiteboard animations
-  socket.on("toggleAnimation", () => socket.broadcast.emit("toggleAnimation"));
+  socket.on("toggleRotate", () => socket.broadcast.emit("toggleRotate"));
+  socket.on("toggleZoom", () => socket.broadcast.emit("toggleZoom"));
   socket.on("toggleDrawing", () => socket.broadcast.emit("toggleDrawing"));
+  socket.on("changeAnimationSpeed", (speed) =>
+    socket.broadcast.emit("changeAnimationSpeed", speed)
+  );
+  socket.on("toggleEraser", (seconds) => {
+    state.eraser.active = !state.eraser.active;
+    state.eraser.speed = seconds;
+    socket.broadcast.emit("toggleEraser", seconds);
+  });
 }
 
 io.on("connection", onConnection);

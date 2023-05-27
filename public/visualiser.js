@@ -131,21 +131,143 @@
   // animations
 
   let animating;
+  let zoom;
   socket.on("state", (state) => {
     console.log(state);
     drawing = state.drawing;
-  });
-
-  socket.on("toggleAnimation", () => {
-    const element = document.querySelector("canvas");
-    if (!animating) {
-      element.classList.add("party-div");
-      animating = true;
-    } else {
-      element.classList.remove("party-div");
-      animating = false;
+    if (state.eraser.active) {
+      toggleEraser();
     }
   });
+
+  const animations = {
+    rotate: {
+      string: "partyAnimation 2s linear infinite",
+      keyframes: {
+        "0%": "rotate(0deg)",
+        "50%": "rotate(180deg)",
+        "100%": "rotate(360deg)",
+      },
+      active: false,
+    },
+    zoom: {
+      string: "zoomAnimation 2s linear infinite",
+      keyframes: {
+        "0%": "scale(1)",
+        "50%": "scale(1)",
+        "100%": "scale(4)",
+      },
+      active: false,
+    },
+  };
+
+  function getCurrentAnimationKeyframes() {
+    let strings = {
+      "0%": "",
+      "50%": "",
+      "100%": "",
+    };
+
+    const allAnimations = Object.keys(animations);
+    allAnimations.forEach((animation, i) => {
+      if (animations[animation].active) {
+        Object.keys(animations[animation].keyframes).forEach((keyframe) => {
+          strings[keyframe] = strings[keyframe]
+            .concat(" ")
+            .concat(animations[animation].keyframes[keyframe]);
+        });
+      }
+    });
+
+    return strings;
+  }
+
+  function currentAnimations() {
+    let fullString = "";
+    Object.keys(animations).forEach((animation, i) => {
+      if (animations[animation].active) {
+        console.log("gettign e");
+        if (i !== 0) {
+          fullString = fullString
+            .concat(", ")
+            .concat(animations[animation].string);
+        } else {
+          fullString = fullString.concat(animations[animation].string);
+        }
+      }
+    });
+    return fullString;
+  }
+  function toggleAnimation(anima) {
+    animations[anima].active = !animations[anima].active;
+
+    function findKeyframesRule(animationName) {
+      const styleSheets = document.styleSheets;
+
+      for (let i = 0; i < styleSheets.length; i++) {
+        const styleSheet = styleSheets[i];
+
+        for (let j = 0; j < styleSheet.cssRules.length; j++) {
+          const rule = styleSheet.cssRules[j];
+
+          if (
+            rule.type === CSSRule.KEYFRAMES_RULE &&
+            rule.name === animationName
+          ) {
+            return rule;
+          }
+        }
+      }
+
+      return null; // Keyframes rule not found
+    }
+
+    const keyframesRule = findKeyframesRule("defaultAnimation");
+    keyframesRule?.deleteRule("0%");
+    // keyframesRule?.deleteRule("25%");
+    keyframesRule?.deleteRule("50%");
+    // keyframesRule?.deleteRule("75%");
+    keyframesRule?.deleteRule("100%");
+
+    const newKeyframes = getCurrentAnimationKeyframes();
+    console.log(
+      newKeyframes,
+      `0% { ${newKeyframes["0%"]} }`,
+      `50% { ${newKeyframes["50%"]} }`
+    );
+
+    keyframesRule.appendRule(`0% {transform: ${newKeyframes["0%"]} }`);
+    keyframesRule.appendRule(`50% {transform: ${newKeyframes["50%"]} }`);
+    keyframesRule.appendRule(`100% { transform: ${newKeyframes["100%"]} }`);
+  }
+
+  // animations
+  socket.on("toggleRotate", () => {
+    console.log("toggling animation");
+    toggleAnimation("rotate");
+  });
+  socket.on("toggleZoom", () => {
+    toggleAnimation("zoom");
+  });
+
+  socket.on("changeAnimationSpeed", (speed) => {
+    console.log("changing animation speed", speed);
+    canvas.style.setProperty("animation-duration", `${speed / 10}s`);
+  });
+
+  let eraserInterval;
+  function toggleEraser() {
+    if (!eraserInterval) {
+      eraserInterval = setInterval(clearCanvas, 1000);
+    } else {
+      clearInterval(eraserInterval);
+      eraserInterval = null;
+    }
+  }
+  socket.on("toggleEraser", (speed) => {
+    toggleEraser();
+  });
+
   socket.on("toggleDrawing", () => {
     console.log("toggling drawing");
     drawing = !drawing;
