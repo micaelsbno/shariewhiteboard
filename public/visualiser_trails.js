@@ -1,30 +1,32 @@
-'use strict';
+"use strict";
 (function () {
-  var socket = io();
+  const query = { clientType: "visualiser", script: "trails" };
+  var socket = io("", { query });
   const trails = {};
   const total = 50;
   const pointer = {
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
   };
+
   const ease = 0.75;
   const pointers = {};
   let currentSocketId = null;
 
-  const svgns = 'http://www.w3.org/2000/svg';
-  const root = document.querySelector('svg');
+  const svgns = "http://www.w3.org/2000/svg";
+  const root = document.querySelector("svg");
 
   const generateTrails = (id) => {
     const lines = [];
     for (let i = 0; i < total; i++) {
-      const line = document.createElementNS(svgns, 'line');
-      line.setAttributeNS(null, 'stroke', 'white');
-      line.setAttributeNS(null, 'stroke-width', 20);
-      line.setAttribute('id', `${id}:${i}`);
+      const line = document.createElementNS(svgns, "line");
+      line.setAttributeNS(null, "stroke", "white");
+      line.setAttributeNS(null, "stroke-width", 20);
+      line.setAttribute("id", `${id}:${i}`);
       root.appendChild(line);
 
       const alpha = (total - i) / total;
-      line.setAttributeNS(null, 'opacity', alpha);
+      line.setAttributeNS(null, "opacity", alpha);
 
       lines.push({
         line,
@@ -38,9 +40,9 @@
     }
   };
 
-  socket.on('connect', () => {
+  socket.on("connect", () => {
     currentSocketId = socket.id;
-    socket.on('draw_start', (data) => {
+    socket.on("draw_start", (data) => {
       const { x, y } = data;
       const color = data[3];
       path = new paper.Path();
@@ -48,37 +50,37 @@
       path.add(new paper.Point(x, y));
     });
 
-    socket.on('draw', (data) => {
+    socket.on("draw", (data) => {
       if (!pointers[data.id]) return;
       pointers[data.id].x = data.x;
       pointers[data.id].y = data.y;
     });
 
-    socket.on('draw_end', (id) => {
+    socket.on("draw_end", (id) => {
       console.log(trails, id);
       trails[id].forEach((trail) => {
         trail.disabled = true;
-        trail.line.setAttributeNS(null, 'opacity', 0);
-        trail.line.classList.toggle('hide');
+        trail.line.setAttributeNS(null, "opacity", 0);
+        trail.line.classList.toggle("hide");
       });
     });
 
-    socket.on('new_client', (data) => {
+    socket.on("new_client", (data) => {
       for (let clientId of data) {
         if (!pointers[clientId]) generateTrails(clientId);
       }
     });
 
-    window.addEventListener('mousemove', (event) => {
-      socket.emit('draw', {
+    window.addEventListener("mousemove", (event) => {
+      socket.emit("draw", {
         x: event.clientX,
         y: event.clientY,
         id: socket.id,
       });
     });
 
-    window.addEventListener('touchmove', (event) => {
-      socket.emit('draw', {
+    window.addEventListener("touchmove", (event) => {
+      socket.emit("draw", {
         x: event.touches[0].clientX,
         y: event.touches[0].clientY,
         id: socket.id,
@@ -101,10 +103,10 @@
         const x = pos.x + (leader.x - pos.x) * ease;
         const y = pos.y + (leader.y - pos.y) * ease;
 
-        line.setAttributeNS(null, 'x1', pos.x);
-        line.setAttributeNS(null, 'y1', pos.y);
-        line.setAttributeNS(null, 'x2', x);
-        line.setAttributeNS(null, 'y2', y);
+        line.setAttributeNS(null, "x1", pos.x);
+        line.setAttributeNS(null, "y1", pos.y);
+        line.setAttributeNS(null, "x2", x);
+        line.setAttributeNS(null, "y2", y);
 
         currentLine.pos = { x, y };
         if (recording && !stop) {
@@ -127,28 +129,28 @@
 
   let recordingTimeoutId;
 
-  socket.on('startRecording', (seconds) => startRecording(seconds));
+  socket.on("startRecording", (seconds) => startRecording(seconds));
   function startRecording(seconds) {
     recordingData = [];
     recording = true;
     recordingTimeoutId = setTimeout(toggleTrails, seconds * 1000);
   }
 
-  socket.on('state', (data) => {
+  socket.on("state", (data) => {
     if (data.trails) {
-      document.querySelector('svg').classList.contains('hide') &&
+      document.querySelector("svg").classList.contains("hide") &&
         toggleTrails();
     }
   });
 
-  socket.on('toggleTrails', toggleTrails);
+  socket.on("toggleTrails", toggleTrails);
   function toggleTrails() {
-    console.log('toggleTrails');
-    document.querySelector('svg').classList.toggle('hide');
+    console.log("toggleTrails");
+    document.querySelector("svg").classList.toggle("hide");
     stop = !stop;
     console.log(stop);
   }
-  socket.on('playRecording', (data) => {
+  socket.on("playRecording", (data) => {
     log = true;
     playRecording(recordingData);
   });
