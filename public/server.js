@@ -1,32 +1,33 @@
-'use strict';
+"use strict";
 (function () {
-  var socket = io();
-  var canvas = document.getElementsByClassName('whiteboard')[0];
-  var context = canvas.getContext('2d');
+  const query = { clientType: "server", script: "main" };
+  var socket = io("", { query });
+  var canvas = document.getElementsByClassName("whiteboard")[0];
+  var context = canvas.getContext("2d");
   function $(selector) {
     return document.querySelector(selector);
   }
 
-  var current = { color: 'black', lineWidth: 2 };
+  var current = { color: "black", lineWidth: 2 };
   var user = { color: null, lineWidth: null };
   var drawing = false;
 
   // function addEventListenersToCanvas(canvas) {
-  canvas.addEventListener('mousedown', onMouseDown, false);
-  canvas.addEventListener('mouseup', onMouseUp, false);
-  canvas.addEventListener('mouseout', onMouseUp, false);
-  canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
+  canvas.addEventListener("mousedown", onMouseDown, false);
+  canvas.addEventListener("mouseup", onMouseUp, false);
+  canvas.addEventListener("mouseout", onMouseUp, false);
+  canvas.addEventListener("mousemove", throttle(onMouseMove, 10), false);
 
   //Touch support for mobile devices
-  canvas.addEventListener('touchstart', onMouseDown, false);
-  canvas.addEventListener('touchend', onMouseUp, false);
-  canvas.addEventListener('touchcancel', onMouseUp, false);
-  canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
+  canvas.addEventListener("touchstart", onMouseDown, false);
+  canvas.addEventListener("touchend", onMouseUp, false);
+  canvas.addEventListener("touchcancel", onMouseUp, false);
+  canvas.addEventListener("touchmove", throttle(onMouseMove, 10), false);
   // }
 
   // socket.on('drawing', onDrawingEvent);
 
-  window.addEventListener('resize', onResize, false);
+  window.addEventListener("resize", onResize, false);
   onResize();
 
   function drawLine(x0, y0, x1, y1, color, emit) {
@@ -44,7 +45,7 @@
     var w = canvas.width;
     var h = canvas.height;
 
-    socket.emit('drawing', {
+    socket.emit("drawing", {
       x0: x0 / w,
       y0: y0 / h,
       x1: x1 / w,
@@ -94,11 +95,11 @@
   // Controls
 
   // color setters
-  var adminColors = document.getElementsByClassName('admin-color');
-  for (let color of adminColors) color.addEventListener('click', onColorUpdate);
+  var adminColors = document.getElementsByClassName("admin-color");
+  for (let color of adminColors) color.addEventListener("click", onColorUpdate);
   function onColorUpdate(e) {
-    current.color = e.target.className.split(' ')[1];
-    socket.emit('changeAdminColor', current.color);
+    current.color = e.target.className.split(" ")[1];
+    socket.emit("changeAdminColor", current.color);
   }
 
   // color picker
@@ -120,20 +121,20 @@
   // }
 
   // line width setter
-  var strokeServer = document.getElementById('stroke-server-button');
-  strokeServer.addEventListener('click', onStrokeServerUpdate);
+  var strokeServer = document.getElementById("stroke-server-button");
+  strokeServer.addEventListener("click", onStrokeServerUpdate);
   function onStrokeServerUpdate(e) {
-    current.lineWidth = $('#stroke-server').value;
-    socket.emit('changeLineWidth', {
+    current.lineWidth = $("#stroke-server").value;
+    socket.emit("changeLineWidth", {
       lineWidth: current.lineWidth,
       admin: true,
     });
   }
-  var strokeUser = document.getElementById('stroke-user-button');
-  strokeUser.addEventListener('click', onStrokeUserUpdate);
+  var strokeUser = document.getElementById("stroke-user-button");
+  strokeUser.addEventListener("click", onStrokeUserUpdate);
   function onStrokeUserUpdate(e) {
-    user.lineWidth = $('#stroke-user').value;
-    socket.emit('changeLineWidth', { lineWidth: user.lineWidth, admin: false });
+    user.lineWidth = $("#stroke-user").value;
+    socket.emit("changeLineWidth", { lineWidth: user.lineWidth, admin: false });
   }
 
   // limit the number of events per second
@@ -169,36 +170,36 @@
 
   // Frame controls
   var savedDrawings = [];
-  var saveButton = $('#new-frame');
-  saveButton.addEventListener('click', () => {
+  var saveButton = $("#new-frame");
+  saveButton.addEventListener("click", () => {
     // Save current drawing to an object
     var dataURL = canvas.toDataURL();
     savedDrawings.push(dataURL);
 
     // add new canvas button
     var drawingNumber = savedDrawings.length;
-    var button = document.createElement('button');
+    var button = document.createElement("button");
     button.innerHTML = `${drawingNumber}`;
     button.id = `canvas-refresh-${drawingNumber}`;
-    button.addEventListener('click', (e) => {
+    button.addEventListener("click", (e) => {
       e.preventDefault();
       loadCanvas(drawingNumber);
     });
-    $('.user-colors').appendChild(button);
-    socket.emit('save');
+    $(".user-colors").appendChild(button);
+    socket.emit("save");
   });
 
   function loadCanvas(number) {
     var img = new Image();
     img.onload = () => context.drawImage(img, 0, 0);
     img.src = savedDrawings[number - 1];
-    socket.emit('loadCanvas', number);
+    socket.emit("loadCanvas", number);
   }
 
-  $('#clear').addEventListener('click', clearCanvas);
+  $("#clear").addEventListener("click", clearCanvas);
   function clearCanvas() {
     context.clearRect(0, 0, canvas.width, canvas.height);
-    socket.emit('clear');
+    socket.emit("clear");
   }
 
   // trails
@@ -212,16 +213,12 @@
   //   socket.emit('playRecording');
   // });
 
-  var stop = $('#toggle-trails');
-  stop.addEventListener('click', () => {
-    socket.emit('toggleTrails');
-  });
-  var animation = $('#toggle-animation');
-  animation.addEventListener('click', () => {
-    socket.emit('toggleAnimation');
-  });
-  var toggleDrawing = $('#toggle-drawing');
-  toggleDrawing.addEventListener('click', () => {
-    socket.emit('toggleDrawing');
-  });
+  var stop = $("#toggle-trails");
+  stop.addEventListener("click", () => socket.emit("toggleTrails"));
+  var animation = $("#toggle-animation");
+  animation.addEventListener("click", () => socket.emit("toggleAnimation"));
+  var zoom = $("#toggle-zoom");
+  zoom.addEventListener("click", () => socket.emit("toggleZoom"));
+  var toggleDrawing = $("#toggle-drawing");
+  toggleDrawing.addEventListener("click", () => socket.emit("toggleDrawing"));
 })();

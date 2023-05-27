@@ -1,28 +1,29 @@
-'use strict';
+"use strict";
 
 (function () {
-  var socket = io();
-  var canvas = document.getElementsByClassName('whiteboard')[0];
-  var context = canvas.getContext('2d');
+  const query = { clientType: "client", script: "drawing" };
+  var socket = io("", { query });
+  var canvas = document.getElementsByClassName("whiteboard")[0];
+  var context = canvas.getContext("2d");
 
-  var current = { color: 'black', lineWidth: 2 };
+  var current = { color: "black", lineWidth: 2 };
   var userDrawing = false;
   var drawing = true;
 
-  canvas.addEventListener('mousedown', onMouseDown, false);
-  canvas.addEventListener('mouseup', onMouseUp, false);
-  canvas.addEventListener('mouseout', onMouseUp, false);
-  canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
+  canvas.addEventListener("mousedown", onMouseDown, false);
+  canvas.addEventListener("mouseup", onMouseUp, false);
+  canvas.addEventListener("mouseout", onMouseUp, false);
+  canvas.addEventListener("mousemove", throttle(onMouseMove, 10), false);
 
   //Touch support for mobile devices
-  canvas.addEventListener('touchstart', onMouseDown, false);
-  canvas.addEventListener('touchend', onMouseUp, false);
-  canvas.addEventListener('touchcancel', onMouseUp, false);
-  canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
+  canvas.addEventListener("touchstart", onMouseDown, false);
+  canvas.addEventListener("touchend", onMouseUp, false);
+  canvas.addEventListener("touchcancel", onMouseUp, false);
+  canvas.addEventListener("touchmove", throttle(onMouseMove, 10), false);
 
   // socket.on('drawing', onDrawingEvent);
 
-  window.addEventListener('resize', onResize, false);
+  window.addEventListener("resize", onResize, false);
   onResize();
 
   function drawLine(x0, y0, x1, y1, color, lineWidth, emit) {
@@ -40,7 +41,7 @@
     var w = canvas.width;
     var h = canvas.height;
 
-    socket.emit('drawing', {
+    socket.emit("drawing", {
       x0: x0 / w,
       y0: y0 / h,
       x1: x1 / w,
@@ -92,19 +93,18 @@
   }
 
   // stroke width
-  const slider = document.querySelector('#stroke-width');
-  slider.addEventListener('change', function (e) {
+  const slider = document.querySelector("#stroke-width");
+  slider.addEventListener("change", function (e) {
     const newWidth = e.target.value;
     current.lineWidth = newWidth;
     context.lineWidth = newWidth;
   });
 
   // color picker
-  const colorPickerElement = document.querySelector('#colorpicker')
-  colorPickerElement.addEventListener('change', function (e) {
+  const colorPickerElement = document.querySelector("#colorpicker");
+  colorPickerElement.addEventListener("change", function (e) {
     current.color = e.target.value;
-  })
-
+  });
 
   // limit the number of events per second
   function throttle(callback, delay) {
@@ -132,13 +132,13 @@
     );
   }
 
-  socket.on('clear', () => clearCanvas());
+  socket.on("clear", () => clearCanvas());
   function clearCanvas() {
     context.clearRect(0, 0, canvas.width, canvas.height);
   }
-  socket.on('toggleDrawing', () => {
+  socket.on("toggleDrawing", () => {
     drawing = !drawing;
-    canvas.classList.toggle('hidden');
+    canvas.classList.toggle("hidden");
   });
 
   // make the canvas fill its parent
@@ -146,7 +146,7 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
   }
-  socket.on('state', (data) => {
+  socket.on("state", (data) => {
     drawing = data.drawing;
   });
 })();

@@ -1,6 +1,7 @@
-'use strict';
+"use strict";
 (function () {
-  var socket = io();
+  const query = { clientType: "client", script: "trails" };
+  var socket = io("", { query });
   const trails = {};
   const total = 50;
   const pointer = {
@@ -12,9 +13,9 @@
   var drawing = false;
   var currentSocketId = null;
 
-  socket.on('connect', () => {
+  socket.on("connect", () => {
     currentSocketId = socket.id;
-    socket.on('draw_start', (data) => {
+    socket.on("draw_start", (data) => {
       const { x, y } = data;
       const color = data[3];
       path = new paper.Path();
@@ -22,26 +23,26 @@
       path.add(new paper.Point(x, y));
     });
 
-    socket.on('draw', (data) => {
+    socket.on("draw", (data) => {
       if (!pointers[data.id]) return;
       pointers[data.id].x = data.x;
       pointers[data.id].y = data.y;
     });
 
-    const svgns = 'http://www.w3.org/2000/svg';
-    const root = document.querySelector('svg');
+    const svgns = "http://www.w3.org/2000/svg";
+    const root = document.querySelector("svg");
 
     const generateTrails = (id) => {
       const lines = [];
       for (let i = 0; i < total; i++) {
-        const line = document.createElementNS(svgns, 'line');
-        line.setAttributeNS(null, 'stroke', 'white');
-        line.setAttributeNS(null, 'stroke-width', 20);
-        line.setAttribute('id', `${id}:${i}`);
+        const line = document.createElementNS(svgns, "line");
+        line.setAttributeNS(null, "stroke", "white");
+        line.setAttributeNS(null, "stroke-width", 20);
+        line.setAttribute("id", `${id}:${i}`);
         root.appendChild(line);
 
         const alpha = (total - i) / total;
-        line.setAttributeNS(null, 'opacity', alpha);
+        line.setAttributeNS(null, "opacity", alpha);
 
         lines.push({
           line,
@@ -55,25 +56,25 @@
       }
     };
 
-    window.addEventListener('mousedown', (event) => {
+    window.addEventListener("mousedown", (event) => {
       drawing = true;
     });
-    window.addEventListener('mouseup', (event) => {
+    window.addEventListener("mouseup", (event) => {
       drawing = false;
-      socket.emit('draw_end', socket.id);
+      socket.emit("draw_end", socket.id);
     });
 
-    window.addEventListener('mousemove', (event) => {
+    window.addEventListener("mousemove", (event) => {
       if (!drawing) return;
-      socket.emit('draw', {
+      socket.emit("draw", {
         x: event.clientX,
         y: event.clientY,
         id: socket.id,
       });
     });
 
-    window.addEventListener('touchmove', (event) => {
-      socket.emit('draw', {
+    window.addEventListener("touchmove", (event) => {
+      socket.emit("draw", {
         x: event.touches[0].clientX,
         y: event.touches[0].clientY,
         id: socket.id,
@@ -92,10 +93,10 @@
         const x = pos.x + (leader.x - pos.x) * ease;
         const y = pos.y + (leader.y - pos.y) * ease;
 
-        line.setAttributeNS(null, 'x1', pos.x);
-        line.setAttributeNS(null, 'y1', pos.y);
-        line.setAttributeNS(null, 'x2', x);
-        line.setAttributeNS(null, 'y2', y);
+        line.setAttributeNS(null, "x1", pos.x);
+        line.setAttributeNS(null, "y1", pos.y);
+        line.setAttributeNS(null, "x2", x);
+        line.setAttributeNS(null, "y2", y);
 
         currentLine.pos = { x, y };
       })

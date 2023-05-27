@@ -1,17 +1,19 @@
-'use strict';
+"use strict";
 
 (function () {
-  var socket = io();
-  var canvas = document.getElementsByClassName('whiteboard')[0];
-  var context = canvas.getContext('2d');
+  const query = { clientType: "visualiser", script: "drawing" };
+  // socket.io.opts.query = customData;
+  var socket = io("", { query });
+  var canvas = document.getElementsByClassName("whiteboard")[0];
+  var context = canvas.getContext("2d");
 
-  var admin = { color: 'black', lineWidth: 2 };
+  var admin = { color: "black", lineWidth: 2 };
   var user = { color: null, lineWidth: null };
   var drawing = false;
 
-  socket.on('drawing', onDrawingEvent);
+  socket.on("drawing", onDrawingEvent);
 
-  window.addEventListener('resize', onResize, false);
+  window.addEventListener("resize", onResize, false);
   onResize();
 
   function drawLine(x0, y0, x1, y1, color, lineWidth, emit) {
@@ -20,7 +22,7 @@
     context.lineTo(x1, y1);
     context.strokeStyle = color;
     context.lineWidth = lineWidth;
-    context.lineCap = 'round';
+    context.lineCap = "round";
     context.stroke();
     context.closePath();
   }
@@ -32,18 +34,18 @@
   }
 
   // Color setters
-  var colors = document.getElementsByClassName('color');
+  var colors = document.getElementsByClassName("color");
   for (let color of colors)
-    color.addEventListener('click', onColorUpdate, false);
+    color.addEventListener("click", onColorUpdate, false);
   function onColorUpdate(e) {
-    admin.color = e.target.className.split(' ')[1];
+    admin.color = e.target.className.split(" ")[1];
   }
-  var userColors = document.getElementsByClassName('user-color');
+  var userColors = document.getElementsByClassName("user-color");
   for (let color of userColors) {
-    color.addEventListener('click', onUserColorUpdate);
+    color.addEventListener("click", onUserColorUpdate);
   }
   function onUserColorUpdate(e) {
-    user.color = e.target.className.split(' ')[1];
+    user.color = e.target.className.split(" ")[1];
   }
 
   // limit the number of events per second
@@ -90,35 +92,35 @@
 
   // Frame controls
   var savedDrawings = [];
-  socket.on('save', () => saveCanvas());
+  socket.on("save", () => saveCanvas());
   function saveCanvas() {
     var dataURL = canvas.toDataURL();
     savedDrawings.push(dataURL);
   }
-  socket.on('loadCanvas', (number) => {
+  socket.on("loadCanvas", (number) => {
     loadCanvas(number);
   });
   function loadCanvas(number) {
     var img = new Image();
     img.onload = () => context.drawImage(img, 0, 0);
     img.src = savedDrawings[number - 1];
-    socket.emit('loadCanvas', number);
+    socket.emit("loadCanvas", number);
   }
-  socket.on('clear', () => clearCanvas());
+  socket.on("clear", () => clearCanvas());
   function clearCanvas() {
     context.clearRect(0, 0, canvas.width, canvas.height);
   }
 
   // server commands
-  socket.on('changeUserColor', (color) => {
-    console.log('changing user color', color);
+  socket.on("changeUserColor", (color) => {
+    console.log("changing user color", color);
     user.color = color;
   });
-  socket.on('changeAdminColor', (color) => {
-    console.log('changing admin color', color);
+  socket.on("changeAdminColor", (color) => {
+    console.log("changing admin color", color);
     admin.color = color;
   });
-  socket.on('changeLineWidth', (data) => {
+  socket.on("changeLineWidth", (data) => {
     if (data.admin) {
       admin.lineWidth = data.lineWidth;
     } else {
@@ -129,24 +131,24 @@
   // animations
 
   let animating;
-  socket.on('state', (state) => {
+  socket.on("state", (state) => {
     console.log(state);
     drawing = state.drawing;
   });
 
-  socket.on('toggleAnimation', () => {
-    const element = document.querySelector('canvas');
+  socket.on("toggleAnimation", () => {
+    const element = document.querySelector("canvas");
     if (!animating) {
-      element.classList.add('party-div');
+      element.classList.add("party-div");
       animating = true;
     } else {
-      element.classList.remove('party-div');
+      element.classList.remove("party-div");
       animating = false;
     }
   });
-  socket.on('toggleDrawing', () => {
-    console.log('toggling drawing');
+  socket.on("toggleDrawing", () => {
+    console.log("toggling drawing");
     drawing = !drawing;
-    canvas.classList.toggle('hidden');
+    canvas.classList.toggle("hidden");
   });
 })();
