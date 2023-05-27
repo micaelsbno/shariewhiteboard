@@ -177,6 +177,18 @@
       },
       active: false,
     },
+    blur: {
+      string: "blurAnimation 2s linear infinite",
+      keyframes: {
+        "0%": "blur(0px)",
+        "50%": "blur(20px)",
+        "100%": "blur(0px)",
+      },
+      getBlur: function (percentage) {
+        return this.active ? this.keyframes[percentage] : "";
+      },
+      active: false,
+    },
   };
 
   function getCurrentAnimationKeyframes() {
@@ -233,9 +245,19 @@
 
     const newKeyframes = getCurrentAnimationKeyframes();
 
-    keyframesRule.appendRule(`0% {transform: ${newKeyframes["0%"]} }`);
-    keyframesRule.appendRule(`50% {transform: ${newKeyframes["50%"]} }`);
-    keyframesRule.appendRule(`100% { transform: ${newKeyframes["100%"]} }`);
+    keyframesRule.appendRule(
+      `0% {transform: ${newKeyframes["0%"]} } ${animations.blur.getBlur("%0")}`
+    );
+    keyframesRule.appendRule(
+      `50% {transform: ${newKeyframes["50%"]} } ${animations.blur.getBlur(
+        "%50"
+      )}`
+    );
+    keyframesRule.appendRule(
+      `100% { transform: ${newKeyframes["100%"]} ${animations.blur.getBlur(
+        "%100"
+      )} }`
+    );
   }
 
   // animations
@@ -248,6 +270,7 @@
   });
   socket.on("toggleSkew", () => toggleAnimation("skew"));
   socket.on("toggleMatrix", () => toggleAnimation("matrix"));
+  socket.on("toggleBlur", () => toggleAnimation("blur"));
 
   socket.on("changeAnimationSpeed", (speed) => {
     console.log("changing animation speed", speed);

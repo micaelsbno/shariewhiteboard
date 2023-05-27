@@ -202,6 +202,13 @@
   rotate.addEventListener("click", () => socket.emit("toggleRotate"));
   var zoom = $("#toggle-zoom");
   zoom.addEventListener("click", () => socket.emit("toggleZoom"));
+  var skew = $("#toggle-skew");
+  skew.addEventListener("click", () => socket.emit("toggleSkew"));
+  var matrix = $("#toggle-matrix");
+  matrix.addEventListener("click", () => socket.emit("toggleMatrix"));
+  var blur = $("#toggle-blur");
+  matrix.addEventListener("click", () => socket.emit("toggleBlur"));
+
   const animationSpeed = $("#animation-speed");
   animationSpeed.addEventListener("change", () =>
     socket.emit("changeAnimationSpeed", animationSpeed.value)

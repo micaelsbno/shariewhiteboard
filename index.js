@@ -97,6 +97,7 @@ function onConnection(socket) {
   socket.on("toggleDrawing", () => socket.broadcast.emit("toggleDrawing"));
   socket.on("toggleMatrix", () => socket.broadcast.emit("toggleMatrix"));
   socket.on("toggleSkew", () => socket.broadcast.emit("toggleSkew"));
+  socket.on("toggleBlur", () => socket.broadcast.emit("toggleBlur"));
   socket.on("changeAnimationSpeed", (speed) =>
     socket.broadcast.emit("changeAnimationSpeed", speed)
   );
