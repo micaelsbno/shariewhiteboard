@@ -209,7 +209,6 @@
   const eraser = $("#eraser");
   eraser.addEventListener("click", () => {
     const eraserSpeed = $("#eraser-speed").value;
-    console.log(eraserSpeed);
     socket.emit("toggleEraser", eraserSpeed);
   });
 

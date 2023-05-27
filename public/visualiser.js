@@ -62,7 +62,6 @@
   }
 
   function onDrawingEvent(data) {
-    console.log(drawing);
     if (!drawing) return;
     var w = canvas.width;
     var h = canvas.height;
@@ -233,11 +232,6 @@
     keyframesRule?.deleteRule("100%");
 
     const newKeyframes = getCurrentAnimationKeyframes();
-    console.log(
-      newKeyframes,
-      `0% { ${newKeyframes["0%"]} }`,
-      `50% { ${newKeyframes["50%"]} }`
-    );
 
     keyframesRule.appendRule(`0% {transform: ${newKeyframes["0%"]} }`);
     keyframesRule.appendRule(`50% {transform: ${newKeyframes["50%"]} }`);

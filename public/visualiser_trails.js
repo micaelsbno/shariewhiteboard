@@ -57,7 +57,6 @@
     });
 
     socket.on("draw_end", (id) => {
-      console.log(trails, id);
       trails[id].forEach((trail) => {
         trail.disabled = true;
         trail.line.setAttributeNS(null, "opacity", 0);
@@ -145,10 +144,8 @@
 
   socket.on("toggleTrails", toggleTrails);
   function toggleTrails() {
-    console.log("toggleTrails");
     document.querySelector("svg").classList.toggle("hide");
     stop = !stop;
-    console.log(stop);
   }
   socket.on("playRecording", (data) => {
     log = true;
